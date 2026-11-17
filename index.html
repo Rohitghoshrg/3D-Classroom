@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D Classroom — Computer Graphics Project | Rohit Ghosh</title>
+<meta name="description" content="An interactive 3D classroom built with C++, OpenGL, GLFW, GLAD and GLM. Transformations, Phong lighting, camera control and animation.">
+<style>
+  :root{
+    --bg:#0b0f14; --surface:#12181f; --surface2:#171f28; --border:#232d38;
+    --text:#e8eef4; --muted:#93a3b1; --accent:#34d399; --accent2:#38bdf8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif;line-height:1.6}
+  a{color:var(--accent);text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+  header{position:sticky;top:0;background:rgba(11,15,20,.88);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);z-index:10}
+  .nav{display:flex;justify-content:space-between;align-items:center;padding:14px 0}
+  .logo{font-weight:800;font-size:20px;color:var(--text)}
+  .logo span{color:var(--accent)}
+  .nav nav a{color:var(--muted);margin-left:20px;font-size:14px}
+  .nav nav a:hover{color:var(--text)}
+  .hero{padding:84px 0 60px;text-align:left}
+  .tag{display:inline-block;border:1px solid var(--border);background:var(--surface);color:var(--accent);padding:5px 14px;border-radius:999px;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+  h1{font-size:clamp(44px,8vw,84px);line-height:1.02;font-weight:900;letter-spacing:-.02em;margin:22px 0 8px}
+  h1 .grad{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p{color:var(--muted);font-size:19px;max-width:720px;margin-top:14px}
+  .badges{margin:26px 0 8px}
+  .badge{display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 13px;margin:0 8px 8px 0;font-size:14px;font-weight:600}
+  .btns{margin-top:26px}
+  .btn{display:inline-block;padding:13px 26px;border-radius:10px;font-weight:700;margin:0 10px 10px 0}
+  .btn-primary{background:var(--accent);color:#06251b}
+  .btn-ghost{border:1px solid var(--border);color:var(--text);background:var(--surface)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:44px 0 6px}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center}
+  .stat b{font-size:30px;display:block;color:var(--accent)}
+  .stat span{color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.06em}
+  section{padding:56px 0 8px}
+  .kicker{color:var(--accent);font-size:13px;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+  h2{font-size:clamp(28px,4.5vw,40px);font-weight:800;margin:8px 0 14px}
+  section p.lead{color:var(--muted);max-width:760px}
+  .chips{margin-top:18px}
+  .chip{display:inline-block;border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:6px 14px;margin:0 8px 10px 0;font-size:14px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px;margin-top:22px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px}
+  .card h3{font-size:19px;margin-bottom:8px}
+  .card p{color:var(--muted);font-size:15px}
+  table{width:100%;border-collapse:collapse;margin-top:20px;background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+  th,td{padding:11px 16px;text-align:left;border-bottom:1px solid var(--border);font-size:15px}
+  th{background:var(--surface2);color:var(--accent);text-transform:uppercase;font-size:12px;letter-spacing:.08em}
+  tr:last-child td{border-bottom:none}
+  kbd{background:#0d1420;border:1px solid var(--border);border-bottom-width:3px;border-radius:6px;padding:1px 8px;font-family:Consolas,monospace;font-size:13px;color:var(--text);white-space:nowrap}
+  ol.steps{margin:18px 0 0 20px;color:var(--muted)}
+  ol.steps li{margin-bottom:8px}
+  ol.steps b{color:var(--text)}
+  footer{border-top:1px solid var(--border);margin-top:64px;padding:30px 0 40px;color:var(--muted);font-size:14px;text-align:center}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <div class="logo">3D<span>Classroom</span></div>
+    <nav>
+      <a href="#overview">Overview</a>
+      <a href="#features">Features</a>
+      <a href="#controls">Controls</a>
+      <a href="#run">Run It</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <span class="tag">Computer Graphics Project</span>
+    <h1>3D <span class="grad">CLASSROOM</span></h1>
+    <p>An interactive 3D classroom scene created using C++, OpenGL, GLFW, GLAD, and GLM — demonstrating 3D transformations, camera/viewing transformations, lighting, materials, animation, and interactive controls.</p>
+    <div class="badges">
+      <span class="badge">C++</span><span class="badge">OpenGL 3.3 Core</span><span class="badge">GLFW</span><span class="badge">GLAD</span><span class="badge">GLM</span><span class="badge">GLSL</span>
+    </div>
+    <div class="btns">
+      <a class="btn btn-primary" href="https://github.com/Rohitghoshrg/3D-Classroom">View on GitHub</a>
+      <a class="btn btn-ghost" href="https://github.com/Rohitghoshrg/3D-Classroom/archive/refs/heads/main.zip">Download Project (.zip)</a>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>10+</b><span>3D Objects</span></div>
+      <div class="stat"><b>4 + 1</b><span>Point Lights + Spotlight</span></div>
+      <div class="stat"><b>25+</b><span>Keyboard Controls</span></div>
+      <div class="stat"><b>330</b><span>OpenGL Core Profile</span></div>
+    </div>
+  </div>
+
+  <section id="overview">
+    <div class="kicker">01 &nbsp;Overview</div>
+    <h2>INSIDE THE CLASSROOM</h2>
+    <p class="lead">The classroom is constructed programmatically from geometric primitives — mainly a reusable unit cube, plus a custom 32-segment cylinder mesh for the trash bin. No pre-built 3D models.</p>
+    <div class="chips">
+      <span class="chip">Walls &amp; Floor</span><span class="chip">Sliding Entrance Door</span><span class="chip">Blackboard</span><span class="chip">Teacher's Table</span><span class="chip">Student Desks</span><span class="chip">Student Chairs</span><span class="chip">Ceiling Fan</span><span class="chip">Ceiling Lights</span><span class="chip">Spotlight</span><span class="chip">Trash Bin</span>
+    </div>
+  </section>
+
+  <section id="features">
+    <div class="kicker">02 &nbsp;Features</div>
+    <h2>WHAT IT DEMONSTRATES</h2>
+    <div class="grid">
+      <div class="card"><h3>3D Transformations</h3><p>Translation, rotation and scaling applied to the complete scene, combined into a single model matrix with glm::translate, glm::rotate and glm::scale.</p></div>
+      <div class="card"><h3>Camera System</h3><p>A custom Camera class with Euler angles (yaw &amp; pitch), keyboard movement, mouse-look, scroll zoom, and perspective projection via glm::lookAt and glm::perspective.</p></div>
+      <div class="card"><h3>Phong Lighting</h3><p>Four ceiling point lights with attenuation plus a presentation spotlight with soft inner/outer cutoff — ambient, diffuse and specular components per material.</p></div>
+      <div class="card"><h3>Animation</h3><p>The sliding door glides smoothly toward its target using deltaTime, and the ceiling fan spins continuously while switched on — frame-rate independent motion.</p></div>
+      <div class="card"><h3>Materials</h3><p>Each object — floor, walls, desks, chairs, blackboard, door — has its own ambient, diffuse, specular and shininess values, so surfaces respond differently to the same lights.</p></div>
+      <div class="card"><h3>Custom Geometry</h3><p>A reusable unit cube with normals and indices builds most objects, while a generated cylinder mesh (side faces + caps) forms the trash bin.</p></div>
+    </div>
+  </section>
+
+  <section id="controls">
+    <div class="kicker">03 &nbsp;Controls</div>
+    <h2>KEYBOARD &amp; MOUSE</h2>
+    <table>
+      <tr><th>Key</th><th>Function</th><th>Key</th><th>Function</th></tr>
+      <tr><td><kbd>SPACE</kbd></td><td>Open / close sliding door</td><td><kbd>F</kbd></td><td>Ceiling fan on / off</td></tr>
+      <tr><td><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd></td><td>Move / rotate camera</td><td><kbd>1</kbd></td><td>Point lights on / off</td></tr>
+      <tr><td><kbd>Q</kbd> / <kbd>E</kbd></td><td>Camera down / up</td><td><kbd>2</kbd></td><td>Spotlight on / off</td></tr>
+      <tr><td><kbd>Mouse Drag</kbd></td><td>Look around</td><td><kbd>X</kbd> <kbd>Y</kbd> <kbd>Z</kbd> + <kbd>R</kbd></td><td>Select axis &amp; rotate scene</td></tr>
+      <tr><td><kbd>I</kbd> <kbd>J</kbd> <kbd>K</kbd> <kbd>L</kbd> <kbd>O</kbd> <kbd>P</kbd></td><td>Translate the whole scene</td><td><kbd>C</kbd>–<kbd>U</kbd></td><td>Scale scene per axis</td></tr>
+      <tr><td><kbd>Scroll</kbd></td><td>Zoom</td><td><kbd>ESC</kbd></td><td>Exit the program</td></tr>
+    </table>
+  </section>
+
+  <section id="run">
+    <div class="kicker">04 &nbsp;Run It</div>
+    <h2>BUILD &amp; RUN (WINDOWS)</h2>
+    <p class="lead">The project ships as a Visual Studio solution with GLFW, GLAD and GLM included in the Dependencies folder. It requests OpenGL 3.3 Core Profile (<code>#version 330 core</code> shaders).</p>
+    <ol class="steps">
+      <li><b>Download</b> the project ZIP from GitHub and extract it.</li>
+      <li><b>Open</b> <b>Classroom.sln</b> in Visual Studio (with C++ development tools installed).</li>
+      <li><b>Set</b> the project as the startup project.</li>
+      <li><b>Build</b> the solution, then <b>Run</b> — and walk into the classroom.</li>
+    </ol>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap">
+    3D Classroom — Computer Graphics Project · Built by <a href="https://github.com/Rohitghoshrg">Rohit Ghosh</a> with C++, OpenGL, GLFW, GLAD &amp; GLM
+  </div>
+</footer>
+</body>
+</html>
